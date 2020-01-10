@@ -38,7 +38,7 @@ public class Character
                     new AnimSprite(carlTexture, 64, 32, 96, 64, 0.2f)));
 
 
-    public final float hx0 = 7f, hy0 = 0f, hx1 = 24f, hy1 = 25f;
+    public final float hx0 = 7f, hy0 = 0f, hx1 = 25f, hy1 = 26f;
     private CharMaterial material;
     private Animation animUp, animDown;
 

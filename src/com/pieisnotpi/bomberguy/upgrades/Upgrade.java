@@ -1,6 +1,6 @@
 package com.pieisnotpi.bomberguy.upgrades;
 
-import com.pieisnotpi.bomberguy.Hitbox;
+import com.pieisnotpi.bomberguy.physics.Hitbox;
 import com.pieisnotpi.bomberguy.players.PlayerObject;
 import com.pieisnotpi.engine.rendering.shaders.types.tex.TexQuad;
 import com.pieisnotpi.engine.rendering.textures.Sprite;

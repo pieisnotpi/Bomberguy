@@ -1,5 +1,8 @@
 package com.pieisnotpi.bomberguy.maps;
 
+import com.pieisnotpi.bomberguy.physics.Hitbox;
+import com.pieisnotpi.bomberguy.physics.PhysicsContainer;
+import com.pieisnotpi.bomberguy.physics.StaticPhysicsObject;
 import com.pieisnotpi.bomberguy.players.SpawnPoint;
 import com.pieisnotpi.bomberguy.tiles.*;
 import com.pieisnotpi.engine.PiEngine;
@@ -13,16 +16,13 @@ import com.pieisnotpi.engine.rendering.textures.Texture;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class GameMap
 {
     private GameTile[][] mapInternal;
     private GameTile[][] map;
-
-    private TileDatabase db;
+    private StaticPhysicsObject[][] mapHitboxes;
 
     private int tw, th, rw, rh;
     private float xOffset, yOffset, size;
@@ -30,9 +30,12 @@ public class GameMap
     private List<SpawnPoint> spawnPoints;
     private Mesh<TexQuad> staticMesh;
     private TexMaterial material;
+    private String title;
 
-    public GameMap(File file)
+    public GameMap(File file, String title)
     {
+        this.title = title;
+
         Scanner scanner;
 
         try
@@ -48,7 +51,7 @@ public class GameMap
         Texture texture = Texture.getTextureFile(scanner.nextLine());
         material = new TexMaterial(Camera.ORTHO2D_R, texture);
 
-        db = new TileDatabase();
+        Map<Integer, TileEntry> db = new HashMap<>();
         spawnPoints = new ArrayList<>();
         staticMesh = new Mesh<>(material, MeshConfig.QUAD_STATIC);
         nonstaticQuads = new ArrayList<>();
@@ -58,7 +61,7 @@ public class GameMap
             int entry = scanner.nextInt();
             int type = scanner.nextInt();
             int x0 = scanner.nextInt(), y0 = scanner.nextInt(), x1 = scanner.nextInt(), y1 = scanner.nextInt();
-            if(entry != -1) db.addEntry(entry, new TileEntry(type, new Sprite(texture, x0, y0, x1, y1)));
+            if(entry != -1) db.put(entry, new TileEntry(type, new Sprite(texture, x0, y0, x1, y1)));
             scanner.nextLine();
         }
 
@@ -70,6 +73,7 @@ public class GameMap
 
         mapInternal = new GameTile[tw][th];
         map = new GameTile[tw][th];
+        mapHitboxes = new StaticPhysicsObject[tw][th];
 
         xOffset = 0;
         yOffset = 0;
@@ -83,9 +87,9 @@ public class GameMap
 
                 int entryVal = scanner.nextInt();
                 if(entryVal == -1) continue;
-                TileEntry entry = db.getEntry(entryVal);
+                TileEntry entry = db.get(entryVal);
 
-                staticMesh.addPrimitive(new TexQuad(x, y, -0.2f, size, size, 0, entry.getSprite()));
+                staticMesh.addPrimitive(new TexQuad(x, y, -0.15f, size, size, 0, entry.getSprite()));
             }
         }
 
@@ -98,7 +102,7 @@ public class GameMap
                 int entryVal = scanner.nextInt();
                 if(entryVal == -1) continue;
 
-                TileEntry entry = db.getEntry(entryVal);
+                TileEntry entry = db.get(entryVal);
                 int type = entry.getTileType();
 
                 if(type == 1)
@@ -119,17 +123,26 @@ public class GameMap
         }
     }
 
-    public void genMapForBoard()
+    public void genMapForBoard(PhysicsContainer physContainer)
     {
         for(int tx = 0; tx < tw; tx++)
         {
             if (th >= 0) System.arraycopy(mapInternal[tx], 0, map[tx], 0, th);
+            for (int ty = 0; ty < th; ty++)
+            {
+                if (mapInternal[tx][ty] != null)
+                {
+                    mapHitboxes[tx][ty] = new StaticPhysicsObject(xTileToScreen(tx), yTileToScreen(ty), xTileToScreen(tx + 1), yTileToScreen(ty + 1));
+                    physContainer.addPhysicsObject(0, mapHitboxes[tx][ty]);
+                }
+            }
         }
     }
 
     public void nullifyTile(int tx, int ty)
     {
         map[tx][ty] = null;
+        mapHitboxes[tx][ty] = null;
     }
 
     public GameTile tileAt(float x, float y)
@@ -143,6 +156,11 @@ public class GameMap
     public GameTile tileAt(int tx, int ty)
     {
         return map[tx][ty];
+    }
+
+    public StaticPhysicsObject hitboxAt(int tx, int ty)
+    {
+        return mapHitboxes[tx][ty];
     }
 
     public Mesh<TexQuad> genStaticMesh()
@@ -160,6 +178,16 @@ public class GameMap
     public List<SpawnPoint> spawnPoints()
     {
         return spawnPoints;
+    }
+
+    public TexMaterial getMaterial() { return material; }
+
+    public boolean objectCollidesWithMap(float xShift, float yShift, Hitbox box)
+    {
+        float x0 = box.x0() + xShift, x1 = box.x1() + xShift, y0 = box.y0() + yShift, y1 = box.y1() + yShift;
+
+        if(tileAt(x0, y0) != null || tileAt(x1, y1) != null) return true;
+        return tileAt(x0, y1) != null || tileAt(x1, y0) != null;
     }
 
     public int getResWidth()
@@ -225,5 +253,10 @@ public class GameMap
     public float tileSize()
     {
         return size;
+    }
+
+    public String getTitle()
+    {
+        return title;
     }
 }

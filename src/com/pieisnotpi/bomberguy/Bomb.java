@@ -2,14 +2,23 @@ package com.pieisnotpi.bomberguy;
 
 import com.pieisnotpi.bomberguy.animations.AnimSprite;
 import com.pieisnotpi.bomberguy.animations.Animation;
+import com.pieisnotpi.bomberguy.physics.Hitbox;
+import com.pieisnotpi.bomberguy.physics.DynamicPhysicsObject;
 import com.pieisnotpi.bomberguy.players.PlayerObject;
+import com.pieisnotpi.bomberguy.tiles.GameBoard;
+import com.pieisnotpi.engine.rendering.cameras.Camera;
+import com.pieisnotpi.engine.rendering.mesh.Mesh;
+import com.pieisnotpi.engine.rendering.mesh.MeshConfig;
+import com.pieisnotpi.engine.rendering.shaders.types.tex.TexMaterial;
 import com.pieisnotpi.engine.rendering.shaders.types.tex.TexQuad;
 import com.pieisnotpi.engine.rendering.textures.Texture;
-import org.joml.Vector3f;
 
-public class Bomb
+public class Bomb extends DynamicPhysicsObject
 {
     private static final Texture texture = Texture.getTextureFile("bomb.png");
+    private static final TexMaterial bombMaterial =
+            new TexMaterial(Camera.ORTHO2D_R, texture);
+
     private final Animation animation = new Animation(null,
             new AnimSprite(texture, 0, 0, 32, 32, 1f),
             new AnimSprite(texture, 32, 0, 64, 32, 1f),
@@ -18,46 +27,55 @@ public class Bomb
     private float timeLeft = 3f;
     private int strength;
     private TexQuad quad;
-    public boolean escaped = false;
     public PlayerObject owner;
-    private Hitbox hitbox;
     private int tx, ty;
+    private GameBoard board;
 
-    public Bomb(int tx, int ty, float x, float y, float size, int strength, PlayerObject owner)
+    public Bomb(int tx, int ty, float x, float y, float size, int strength, PlayerObject owner, GameBoard board)
     {
         this.owner = owner;
-
         this.tx = tx;
         this.ty = ty;
         float px = size/32f;
+        this.board = board;
 
-        hitbox = new Hitbox(x + 9*px, y + 9*px, x + 23*px, y + 23*px, new Vector3f(0));
+        collidesWith = new int[]{1};
+        bounciness = 0;
+        collideable = false;
+
+        transform.translate(x, y, 0);
+        hitbox = new Hitbox(9*px, 9*px, 23*px, 23*px, transform.pos);
 
         this.strength = strength;
         animation.start();
 
-        quad = new TexQuad(x, y, -0.1f, size, size, 0, animation.getCurSprite());
+        quad = new TexQuad(0, 0, -0.1f, size, size, 0, animation.getCurSprite());
+        Mesh<TexQuad> mesh = new Mesh<>(bombMaterial, MeshConfig.QUAD);
+        mesh.addPrimitive(quad);
+        createRenderable(0, 0, mesh);
     }
 
-    public Hitbox getHitbox()
-    {
-        return hitbox;
-    }
-
-    public boolean isExploded(float timeStep)
+    @Override
+    public void update(float timeStep)
     {
         timeLeft -= timeStep;
-        return timeLeft <= 0.0001f;
+        if(timeLeft <= 0.0001f)
+        {
+            board.detonateBomb(this);
+            destroy();
+        }
     }
 
-    public boolean spriteUpdated(float timeStep)
+    @Override
+    public void drawUpdate(float timeStep)
     {
+        super.drawUpdate(timeStep);
+
         if(animation.hasSpriteChanged(timeStep))
         {
             quad.setQuadSprite(animation.getCurSprite());
-            return true;
+            renderable.getMeshes()[0].flagForBuild();
         }
-        return false;
     }
 
     public int getStrength()
@@ -73,10 +91,5 @@ public class Bomb
     public int ty()
     {
         return ty;
-    }
-
-    public TexQuad getQuad()
-    {
-        return quad;
     }
 }

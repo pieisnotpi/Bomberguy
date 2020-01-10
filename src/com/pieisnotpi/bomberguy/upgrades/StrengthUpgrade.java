@@ -20,7 +20,7 @@ public class StrengthUpgrade extends Upgrade
     @Override
     public boolean onCollect(PlayerObject player)
     {
-        if(player.getBombStrength() < PlayerObject.maxStrength)
+        if(player.getBombStrength() < PlayerObject.MAX_STRENGTH)
         {
             player.upgradeStrength();
             return true;

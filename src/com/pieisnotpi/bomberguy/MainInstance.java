@@ -6,6 +6,7 @@ import com.pieisnotpi.engine.PiEngine;
 import com.pieisnotpi.engine.input.keyboard.Keybind;
 import com.pieisnotpi.engine.input.keyboard.Keyboard;
 import com.pieisnotpi.engine.rendering.shaders.types.tex.TexShader;
+import com.pieisnotpi.engine.rendering.shaders.types.tex_c.TexCShader;
 import com.pieisnotpi.engine.rendering.shaders.types.text.TextShader;
 import com.pieisnotpi.engine.rendering.window.GLInstance;
 import com.pieisnotpi.engine.rendering.window.ShaderInitializer;
@@ -28,6 +29,7 @@ public class MainInstance extends GameInstance
                 inst.registerShaderProgram(TextShader.ID, new TextShader(inst.window).init());
                 inst.registerShaderProgram(TexShader.ID, new TexShader(inst.window).init());
                 inst.registerShaderProgram(CharShader.ID, new CharShader(inst.window).init());
+                inst.registerShaderProgram(TexCShader.ID, new TexCShader(inst.window).init());
             }
         };
 
@@ -45,6 +47,7 @@ public class MainInstance extends GameInstance
     public void start() throws Exception
     {
         window.show();
+        window.setFullscreen(true);
 
         super.start();
     }

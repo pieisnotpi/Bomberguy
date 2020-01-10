@@ -33,7 +33,7 @@ public class GameScene extends Scene
 
         board = new GameBoard(GameMaps.metal6);
         addGameObject(board);
-        board.addPlayer(10, Character.robot);
+        board.addPlayer(-1, Character.robot);
 
         return this;
     }
@@ -45,14 +45,6 @@ public class GameScene extends Scene
         players.add(p);
         p.addToGame(board);
         super.onJoystickConnect(joystick);
-    }
-
-    @Override
-    public void update(float timeStep) throws Exception
-    {
-        super.update(timeStep);
-
-        board.gameUpdate(timeStep);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.pieisnotpi.bomberguy.menu;
 
+import com.pieisnotpi.bomberguy.maps.GameMap;
 import com.pieisnotpi.bomberguy.players.Character;
 import com.pieisnotpi.bomberguy.players.Player;
 import com.pieisnotpi.engine.input.joystick.Joybind;
@@ -11,6 +12,7 @@ import java.util.List;
 
 public class MainMenu extends GameObject
 {
+    private GameMap nextLevel;
     private List<Player> players;
     private List<Joybind> joybinds;
     private Character[] chars = { Character.robot, Character.carl };
@@ -41,5 +43,10 @@ public class MainMenu extends GameObject
         else if (dir > 0) player.place++;
 
 
+    }
+
+    public void setNextLevel(GameMap next)
+    {
+        nextLevel = next;
     }
 }
