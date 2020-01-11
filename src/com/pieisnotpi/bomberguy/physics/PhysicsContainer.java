@@ -158,7 +158,7 @@ public class PhysicsContainer
                 if (dif > 0)
                 {
                     double angle = Math.atan2(dy, dx);
-                    dyn.velocity.add((float) Math.cos(angle) * dif * force, (float) Math.sin(angle) * dif * force);
+                    dyn.applyForce((float) Math.cos(angle) * dif * force, (float) Math.sin(angle) * dif * force);
                 }
             }
         });

@@ -27,8 +27,6 @@ public class Hitbox
         boolean nx0Fits = nx0 > hitbox.x0() && nx0 < hitbox.x1(), nx1Fits = nx1 > hitbox.x0() && nx1 < hitbox.x1(),
                 ny0Fits = ny0 > hitbox.y0() && ny0 < hitbox.y1(), ny1Fits = ny1 > hitbox.y0() && ny1 < hitbox.y1();
 
-       // if ( (nx0Fits || nx1Fits) && (ny0Fits || ny1Fits) ) System.out.printf("%b, %b, %b, %b\n", nx0Fits, nx1Fits, ny0Fits, ny1Fits);
-
         if ( (nx0Fits || nx1Fits) && (ny0Fits || ny1Fits) ) return true;
         else return collidesInternal(xOffset, yOffset, hitbox);
     }

@@ -34,4 +34,8 @@ public abstract class MenuItem extends UiObject
     public abstract void onRight();
 
     public abstract void onClick();
+
+    public abstract void highlight();
+
+    public abstract void dehighlight();
 }

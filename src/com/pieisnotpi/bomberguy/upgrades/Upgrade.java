@@ -14,7 +14,7 @@ public abstract class Upgrade
     public Upgrade(int hx0, int hy0, int hx1, int hy1, Vector3f pos, float size, Sprite sprite)
     {
         hitbox = new Hitbox(hx0, hy0, hx1, hy1, pos);
-        quad = new TexQuad(pos.x, pos.y, -0.15f, size, size, 0, sprite);
+        quad = new TexQuad(pos.x, pos.y, -0.11f, size, size, 0, sprite);
     }
 
     public Hitbox getHitbox()

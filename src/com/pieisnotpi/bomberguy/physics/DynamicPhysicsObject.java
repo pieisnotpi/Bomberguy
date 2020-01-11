@@ -77,4 +77,9 @@ public abstract class DynamicPhysicsObject extends GameObject implements Physics
     {
         this.collideable = collideable;
     }
+
+    public void applyForce(float x, float y)
+    {
+        velocity.add(x / mass, y / mass);
+    }
 }

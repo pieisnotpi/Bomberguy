@@ -47,4 +47,14 @@ public class LevelSelect extends MenuItem
     {
         // EMPTY
     }
+
+    @Override
+    public void highlight() {
+
+    }
+
+    @Override
+    public void dehighlight() {
+
+    }
 }

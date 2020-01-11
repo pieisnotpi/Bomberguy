@@ -27,7 +27,7 @@ public class TileParticle extends DynamicPhysicsObject
     {
         super(x, y, 0, 0, size, -size);
 
-        mass = 0.1f;
+        mass = 1f;
         bounciness = 0.5f;
         collidesWith = new int[]{0};
 
@@ -36,7 +36,7 @@ public class TileParticle extends DynamicPhysicsObject
 
         lifeSpan = LIFE_SPAN + (float) (Math.random() - 0.5) * LIFE_SPAN_VARIANCE;
 
-        quad = new TexCQuad(0, 0, -0.1f, size, -size, 0, new Sprite(texture, texX, texY, texX + texSize, texY + texSize, false), color);
+        quad = new TexCQuad(0, 0, -0.15f, size, -size, 0, new Sprite(texture, texX, texY, texX + texSize, texY + texSize, false), color);
 
         Mesh<TexCQuad> mesh = new Mesh<>(new TexCMaterial(Camera.ORTHO2D_R, texture), MeshConfig.QUAD);
         mesh.addPrimitive(quad);

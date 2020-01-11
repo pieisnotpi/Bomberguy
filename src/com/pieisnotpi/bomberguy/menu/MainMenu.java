@@ -6,15 +6,14 @@ import com.pieisnotpi.bomberguy.players.Player;
 import com.pieisnotpi.engine.input.joystick.Joybind;
 import com.pieisnotpi.engine.input.joystick.Joystick;
 import com.pieisnotpi.engine.input.joystick.Xbox;
-import com.pieisnotpi.engine.scene.GameObject;
+import com.pieisnotpi.engine.scene.Scene;
 
 import java.util.List;
 
-public class MainMenu extends GameObject
+public class MainMenu extends Scene
 {
     private GameMap nextLevel;
     private List<Player> players;
-    private List<Joybind> joybinds;
     private Character[] chars = { Character.robot, Character.carl };
 
     public MainMenu(List<Player> players)

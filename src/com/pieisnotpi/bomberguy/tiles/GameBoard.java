@@ -31,7 +31,7 @@ public class GameBoard extends GameObject
     private static final CharMaterial upgradesMaterial =
             new CharMaterial(Camera.ORTHO2D_R, Texture.getTextureFile("upgrades.png"));
 
-    private static final float TILE_PARTICLE_SPEED = 500, PLAYER_PARTICLE_SPEED = 240, ITEM_PARTICLE_SPEED = 160;
+    private static final float TILE_PARTICLE_SPEED = 200, PLAYER_PARTICLE_SPEED = 240, ITEM_PARTICLE_SPEED = 160;
 
     private GameMap map;
     private Mesh<TexQuad> nonstaticMesh, upgradesMesh;
@@ -86,12 +86,6 @@ public class GameBoard extends GameObject
         map.genMapForBoard(physics);
 
         onWindowResize(scene.window.getBufferRes());
-    }
-
-    @Override
-    public void drawUpdate(float timeStep)
-    {
-
     }
 
     @Override
@@ -259,7 +253,7 @@ public class GameBoard extends GameObject
                 Sprite sprite = player.getSprite();
                 CharMaterial m = player.getMaterial();
 
-                particlize(px - 8, py, vx, vy, 8, 0, 24, 32, 0, m.textures[0], sprite, new Color(1, 0, 0, 1));
+                particlize(px - 8, py, vx, vy, 8, 0, 24, 32, 0, 5f, m.textures[0], sprite, new Color(1, 0, 0, 1));
             }
         }
 
@@ -277,7 +271,7 @@ public class GameBoard extends GameObject
                 float sx = map.xTileToScreen(tx), sy = map.yTileToScreen(ty);
                 float vx = tx == ox ? 0 : ITEM_PARTICLE_SPEED /(tx - ox), vy = ty == oy ? 0 : ITEM_PARTICLE_SPEED /(ty - oy);
 
-                particlize(sx, sy, vx, vy, 8, 8, 22, 22, 0.25f, upgradesMaterial.textures[0], sprite, new Color(0, 0, 0, 1));
+                particlize(sx, sy, vx, vy, 8, 8, 22, 22, 0.25f, 2f, upgradesMaterial.textures[0], sprite, new Color(0, 0, 0, 1));
             }
         }
     }
@@ -293,7 +287,7 @@ public class GameBoard extends GameObject
         float sx = map.xTileToScreen(tx), sy = map.yTileToScreen(ty);
         TexMaterial m = map.getMaterial();
 
-        particlize(sx, sy, vx, vy, 0, 0, 32, 32, 0.25f, m.textures[0], sprite, new Color(0, 0, 0, 1));
+        particlize(sx, sy, vx, vy, 0, 0, 32, 32, 0.25f, 1f, m.textures[0], sprite, new Color(0, 0, 0, 1));
 
         int dropOdds = randomUpgrade();
         if(dropOdds <= BombCountUpgrade.odds)
@@ -310,7 +304,7 @@ public class GameBoard extends GameObject
         }
     }
 
-    private void particlize(float screenX, float screenY, float vx, float vy, int startX, int startY, int endX, int endY, float bounciness, Texture texture, Sprite sprite, Color color)
+    private void particlize(float screenX, float screenY, float vx, float vy, int startX, int startY, int endX, int endY, float bounciness, float mass, Texture texture, Sprite sprite, Color color)
     {
         int texX = sprite.x0, texY = sprite.y0;
         float vxRanMult = vx == 0 ? vy : vx/2;
@@ -323,8 +317,9 @@ public class GameBoard extends GameObject
                 float vxOffset = (random.nextFloat() - 0.5f) * vxRanMult;
                 float vyOffset = (random.nextFloat() - 0.5f) * vyRanMult;
 
-                TileParticle particle = new TileParticle(screenX + x, screenY + endY - y, 2, texture, 2, texX + x, texY + y, vx + vxOffset, vy + vyOffset, color, this);
+                TileParticle particle = new TileParticle(screenX + x, screenY + endY - y, 2, texture, 2, texX + x, texY + y, vxOffset, vyOffset, color, this);
                 particle.setBounciness(bounciness);
+                particle.setMass(mass);
                 addChild(3, particle);
             }
         }
