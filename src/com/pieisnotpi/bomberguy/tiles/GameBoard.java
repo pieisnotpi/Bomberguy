@@ -103,8 +103,8 @@ public class GameBoard extends GameObject
                 Upgrade u = upgrades.get(i);
                 if(player.getHitbox().collidesWith(0, 0, u.getHitbox()) && u.onCollect(player))
                 {
+                    removeChild(u);
                     upgrades.remove(u);
-                    upgradesMesh.removePrimitive(u.getQuad());
                     i--;
                 }
             }
@@ -189,40 +189,42 @@ public class GameBoard extends GameObject
 
         for(int x = tx; x <= tx + bomb.getStrength() && x < map.width(); x++)
         {
-            GameTile tile = map.tileAt(x, ty);
-            if (tile == null) explodeEmptyZone(x, ty, tx, ty);
-            else if (tile.getClass().equals(WallTile.class)) break;
-            else explodeTile(x, ty, TILE_PARTICLE_SPEED/(x - tx), 0, tile);
+            if (detonateZone(x, ty, tx, ty)) break;
         }
 
         for(int x = tx - 1; x >= tx - bomb.getStrength() && x >= 0; x--)
         {
-            GameTile tile = map.tileAt(x, ty);
-            if (tile == null) explodeEmptyZone(x, ty, tx, ty);
-            else if (tile.getClass().equals(WallTile.class)) break;
-            else explodeTile(x, ty, TILE_PARTICLE_SPEED/(x - tx), 0, tile);
+            if (detonateZone(x, ty, tx, ty)) break;
         }
 
         for(int y = ty + 1; y <= ty + bomb.getStrength() && y < map.height(); y++)
         {
-            GameTile tile = map.tileAt(tx, y);
-            if (tile == null) explodeEmptyZone(tx, y, tx, ty);
-            else if (tile.getClass().equals(WallTile.class)) break;
-            else explodeTile(tx, y, 0, TILE_PARTICLE_SPEED/(y - ty), tile);
+            if (detonateZone(tx, y, tx, ty)) break;
         }
 
         for(int y = ty - 1; y >= ty - bomb.getStrength() && y >= 0; y--)
         {
-            GameTile tile = map.tileAt(tx, y);
-            if (tile == null) explodeEmptyZone(tx, y, tx, ty);
-            else if (tile.getClass().equals(WallTile.class)) break;
-            else explodeTile(tx, y, 0, TILE_PARTICLE_SPEED/(y - ty), tile);
+            if (detonateZone(tx, y, tx, ty)) break;
         }
 
         bombs.remove(bomb);
         physics.removePhysicsObject(2, bomb);
 
         physics.applyInstantForce(3, bomb.getHitbox().mx(), bomb.getHitbox().my(), (bomb.getStrength() + 0.5f) * map.tileSize(), 25);
+        physics.applyInstantForce(4, bomb.getHitbox().mx(), bomb.getHitbox().my(), (bomb.getStrength() + 0.5f) * map.tileSize(), 25);
+    }
+
+    private boolean detonateZone(int x, int y, int ox, int oy)
+    {
+        float vx = x == ox ? 0 : TILE_PARTICLE_SPEED/(x - ox);
+        float vy = y == oy ? 0 : TILE_PARTICLE_SPEED/(y - oy);
+
+        GameTile tile = map.tileAt(x, y);
+        if (tile == null) explodeEmptyZone(x, y, ox, oy);
+        else if (tile.getClass().equals(WallTile.class)) return true;
+        else explodeTile(x, y, vx, vy, tile);
+
+        return false;
     }
 
     private void explodeEmptyZone(int tx, int ty, int ox, int oy)
@@ -256,24 +258,6 @@ public class GameBoard extends GameObject
                 particlize(px - 8, py, vx, vy, 8, 0, 24, 32, 0, 5f, m.textures[0], sprite, new Color(1, 0, 0, 1));
             }
         }
-
-        for (int i = 0; i < upgrades.size(); i++)
-        {
-            Upgrade u = upgrades.get(i);
-            if (u.getHitbox().isWithin(x0, y0, x1, y1))
-            {
-                upgrades.remove(u);
-                upgradesMesh.removePrimitive(u.getQuad());
-                i--;
-
-                Sprite sprite = u.getQuad().getQuadSprite();
-
-                float sx = map.xTileToScreen(tx), sy = map.yTileToScreen(ty);
-                float vx = tx == ox ? 0 : ITEM_PARTICLE_SPEED /(tx - ox), vy = ty == oy ? 0 : ITEM_PARTICLE_SPEED /(ty - oy);
-
-                particlize(sx, sy, vx, vy, 8, 8, 22, 22, 0.25f, 2f, upgradesMaterial.textures[0], sprite, new Color(0, 0, 0, 1));
-            }
-        }
     }
 
     private void explodeTile(int tx, int ty, float vx, float vy, GameTile tile)
@@ -294,13 +278,13 @@ public class GameBoard extends GameObject
         {
             BombCountUpgrade u = new BombCountUpgrade(map.tileSize(), new Vector3f(map.xTileToScreen(tx), map.yTileToScreen(ty), 0));
             upgrades.add(u);
-            upgradesMesh.addPrimitive(u.getQuad());
+            addChild(4, u);
         }
         else if(dropOdds <= StrengthUpgrade.odds)
         {
             StrengthUpgrade u = new StrengthUpgrade(map.tileSize(), new Vector3f(map.xTileToScreen(tx), map.yTileToScreen(ty), 0));
             upgrades.add(u);
-            upgradesMesh.addPrimitive(u.getQuad());
+            addChild(4, u);
         }
     }
 

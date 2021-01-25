@@ -58,5 +58,6 @@ public class GameScene extends Scene
         if(key == Keyboard.KEY_4) board.loadMap(GameMaps.metal4);
         if(key == Keyboard.KEY_5) board.loadMap(GameMaps.metal5);
         if(key == Keyboard.KEY_6) board.loadMap(GameMaps.metal6);
+        if(key == Keyboard.KEY_7) board.loadMap(GameMaps.stone1);
     }
 }

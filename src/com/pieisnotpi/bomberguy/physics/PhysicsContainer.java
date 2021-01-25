@@ -147,7 +147,7 @@ public class PhysicsContainer
     {
         List<PhysicsObject> objs = physObjects.get(layer);
 
-        objs.forEach(obj ->
+        if(objs != null) objs.forEach(obj ->
         {
             if (obj instanceof DynamicPhysicsObject)
             {

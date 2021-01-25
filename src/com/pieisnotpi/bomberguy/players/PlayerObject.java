@@ -9,7 +9,6 @@ import com.pieisnotpi.engine.input.joystick.Joybind;
 import com.pieisnotpi.engine.input.joystick.Xbox;
 import com.pieisnotpi.engine.input.keyboard.Keybind;
 import com.pieisnotpi.engine.input.keyboard.Keyboard;
-import com.pieisnotpi.engine.output.Logger;
 import com.pieisnotpi.engine.rendering.mesh.Mesh;
 import com.pieisnotpi.engine.rendering.mesh.MeshConfig;
 import com.pieisnotpi.engine.rendering.shaders.types.tex.TexQuad;
@@ -182,7 +181,6 @@ public class PlayerObject extends DynamicPhysicsObject
 
         if(scene != null && renderable != null) scene.removeRenderable(renderable);
         if(node != null) node.removeSelf();
-        Logger.SYSTEM.debugStacktrace();
 
         scene = null;
     }
